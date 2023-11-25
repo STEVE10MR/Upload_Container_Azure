@@ -30,19 +30,27 @@ jobs:
 - job: DeployToAzure
   displayName: 'Deploy to Azure App Service'
   dependsOn: BuildAndPublish
-  environment: 'Azure subscription 1'  # Cambiado a la suscripción de Azure
 
   steps:
     - download: current
       artifact: 'dist'
       displayName: 'Download Artifact'
 
+    - task: UseNodeJs@1
+      inputs:
+        versionSpec: '14.x'
+        displayName: 'Install Node.js for deployment'
+
+    - script: |
+        npm install -g azure-functions-core-tools@3 --unsafe-perm=true
+      displayName: 'Install Azure Functions Core Tools'
+
     - task: AzureRmWebAppDeployment@4
       inputs:
         ConnectionType: 'AzureRM'
-        azureSubscription: 'Azure subscription 1'  # Cambiado al nombre de tu suscripción
+        azureSubscription: '<Nombre de tu servicio de conexión a Azure>'
         appType: 'webAppLinux'
-        appName: 'uploadcontainer'  # Nombre de tu App Service en Azure
+        appName: 'uploadcontainer'
         packageForLinux: '$(Pipeline.Workspace)/dist'
         RuntimeStack: 'NODE|14.x'
       displayName: 'Deploy to Azure App Service'

@@ -50,7 +50,7 @@ jobs:
         ConnectionType: 'AzureRM'
         azureSubscription: '<Nombre de tu servicio de conexión a Azure>'
         appType: 'webAppLinux'
-        appName: 'uploadcontainer'
+        appName: 'uploadcontainer'  # Nombre de tu App Service en Azure
         packageForLinux: '$(Pipeline.Workspace)/dist'
         RuntimeStack: 'NODE|14.x'
       displayName: 'Deploy to Azure App Service'

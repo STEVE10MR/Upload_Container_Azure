@@ -15,6 +15,34 @@ jobs:
 
     - script: |
         cd STEVE10MR/Upload_Container_Azure
-        npm install && npm run build
+        npm install
+        npm run build
 
-      displayName: 'Build and publish'
+      displayName: 'Build'
+
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: '$(Build.ArtifactStagingDirectory)'
+        artifact: 'dist'
+        publishLocation: 'pipeline'
+      displayName: 'Publish Artifact'
+
+- job: DeployToAzure
+  displayName: 'Deploy to Azure App Service'
+  dependsOn: BuildAndPublish
+  environment: 'Azure subscription 1'  # Cambiado a la suscripción de Azure
+
+  steps:
+    - download: current
+      artifact: 'dist'
+      displayName: 'Download Artifact'
+
+    - task: AzureRmWebAppDeployment@4
+      inputs:
+        ConnectionType: 'AzureRM'
+        azureSubscription: 'Azure subscription 1'  # Cambiado al nombre de tu suscripción
+        appType: 'webAppLinux'
+        appName: 'uploadcontainer'  # Nombre de tu App Service en Azure
+        packageForLinux: '$(Pipeline.Workspace)/dist'
+        RuntimeStack: 'NODE|14.x'
+      displayName: 'Deploy to Azure App Service'

@@ -1,0 +1,39 @@
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+jobs:
+  - job: BuildAndPublish
+    displayName: 'Build and Publish'
+    steps:
+      - task: NodeTool@0
+        inputs:
+          versionSpec: '10.x'
+        displayName: 'Install Node.js'
+
+      - script: |
+          npm install
+          npm run build
+        displayName: 'NPM Install and Build'
+
+      - task: PublishBuildArtifacts@1
+        inputs:
+          pathtoPublish: '$(System.DefaultWorkingDirectory)/dist'
+          artifactName: 'drop'
+        displayName: 'Publish Artifact'
+
+  - job: Deploy
+    displayName: 'Deploy to Azure App Service'
+    environment: 'dev'
+    dependsOn: BuildAndPublish
+    steps:
+      - task: AzureAppServiceDeploy@1
+        inputs:
+          appName: 'upload'
+          resourceGroup: 'malcolm'
+          package: '$(Build.Artifacts.drop)'
+          publishWebPackage: true
+          deployMode: 'production'
+        displayName: 'Deploy to Azure App Service'

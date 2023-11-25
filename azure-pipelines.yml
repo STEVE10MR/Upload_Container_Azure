@@ -5,26 +5,23 @@ pool:
   vmImage: ubuntu-latest
 
 jobs:
-- job: Build
-  displayName: 'Build and Test'
+- job: BuildAndPublish
+  displayName: 'Build and Publish'
   steps:
-  - task: NodeTool@0
-    inputs:
-      versionSpec: '10.x'
-    displayName: 'Install Node.js'
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '10.x'
+      displayName: 'Install Node.js'
 
-  - script: |
-      cd STEVE10MR/Upload_Container_Azure
-      npm install
-      npm run build
-    displayName: 'npm install and build'
+    - script: |
+        cd STEVE10MR/Upload_Container_Azure
+        npm install
+        npm run build
 
-- job: Publish
-  displayName: 'Publish Artifact'
-  dependsOn: Build
-  steps:
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathtoPublish: '$(System.DefaultWorkingDirectory)/STEVE10MR/Upload_Container_Azure/dist'
-      artifactName: 'drop'
-    displayName: 'Publish Artifact'
+      displayName: 'NPM Install and Build'
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathtoPublish: '$(System.DefaultWorkingDirectory)/STEVE10MR/Upload_Container_Azure/dist'
+        artifactName: 'drop'
+      displayName: 'Publish Artifact'

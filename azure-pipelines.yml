@@ -2,26 +2,19 @@ trigger:
 - main
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: ubuntu-18.04
 
 jobs:
 - job: BuildAndPublish
   displayName: 'Build and Publish'
   steps:
-    - task: NodeTool@0
+    - task: UseNodeJs@1
       inputs:
-        versionSpec: '10.x'
+        versionSpec: '14.x'
       displayName: 'Install Node.js'
 
     - script: |
         cd STEVE10MR/Upload_Container_Azure
-        npm install
-        npm run build
+        npm install && npm run build
 
-      displayName: 'NPM Install and Build'
-
-    - task: PublishBuildArtifacts@1
-      inputs:
-        pathtoPublish: '$(System.DefaultWorkingDirectory)/STEVE10MR/Upload_Container_Azure/dist'
-        artifactName: 'drop'
-      displayName: 'Publish Artifact'
+      displayName: 'Build and publish'
